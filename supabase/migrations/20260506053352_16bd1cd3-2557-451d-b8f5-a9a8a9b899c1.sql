@@ -1,0 +1,1 @@
+ALTER TABLE public.interview_participants ADD COLUMN IF NOT EXISTS notes text NOT NULL DEFAULT '';

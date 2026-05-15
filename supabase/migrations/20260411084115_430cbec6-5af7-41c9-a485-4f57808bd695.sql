@@ -1,0 +1,1 @@
+ALTER TABLE public.interviewer_names ADD CONSTRAINT interviewer_names_candidate_id_unique UNIQUE (candidate_id);

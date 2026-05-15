@@ -1,0 +1,7 @@
+project_id = "lywicddkwrmqtimiqzva"
+
+[functions.admin-users]
+verify_jwt = false
+
+[functions.send-interview-email]
+verify_jwt = false
