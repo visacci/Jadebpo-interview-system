@@ -234,11 +234,6 @@ export default function ApplicationForm() {
           <p className="text-muted-foreground">
             {(job as any).departments?.name ?? "Jade BPO"}
           </p>
-          {job.description && (
-            <p className="text-sm text-muted-foreground max-w-lg mx-auto">
-              {job.description}
-            </p>
-          )}
         </div>
 
         {/* Steps indicator */}

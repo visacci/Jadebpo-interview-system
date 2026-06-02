@@ -19,6 +19,7 @@ import Results from "./pages/Results";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
 import PendingInterviews from "./pages/PendingInterviews";
+import JobDetails from "./pages/JobDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Careers />} />
+            <Route path="/careers/:jobId" element={<JobDetails />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/apply/:jobId" element={<ApplicationForm />} />
             <Route path="/aptitude/:applicationId" element={<AptitudeTest />} />

@@ -256,7 +256,7 @@ export default function Careers() {
 
 function JobCard({ job, appCount }: { job: any; appCount: number }) {
   return (
-    <Link to={`/apply/${job.id}`}>
+    <Link to={`/careers/${job.id}`}>
       <Card className="h-full hover:shadow-lg hover:border-primary/30 transition-all cursor-pointer group">
         <CardContent className="p-5 space-y-3">
           <div className="flex items-start justify-between">
