@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getScoreColor, getScoreBgColor } from "@/lib/scoring";
-import { Search, Download, Trophy, TrendingDown, ChevronDown, ChevronUp, FileSpreadsheet, Trash2, FileText, MessageSquare, RotateCcw, Pencil, Check, X } from "lucide-react";
+import { Search, Download, Trophy, TrendingDown, ChevronDown, ChevronUp, FileSpreadsheet, Trash2, FileText, MessageSquare, RotateCcw, Pencil, Check, X, MailCheck, MailX } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -369,7 +369,51 @@ function CandidateRow({ candidate, rank, isTop, isBottom, expanded, onToggle }: 
   const [editingAptitude, setEditingAptitude] = useState(false);
   const [aptitudeInput, setAptitudeInput] = useState("");
   const [isSavingAptitude, setIsSavingAptitude] = useState(false);
+  const [sendingEmailType, setSendingEmailType] = useState<"success" | "rejection" | null>(null);
   const queryClient = useQueryClient();
+
+  const sendOutcomeEmail = async (type: "success" | "rejection") => {
+    if (!candidate.application_id) {
+      toast.error("No linked application found for this candidate.");
+      return;
+    }
+
+    setSendingEmailType(type);
+    try {
+      const { data: appData, error: appError } = await supabase
+        .from("applications")
+        .select("email, applicant_name, jobs(title)")
+        .eq("id", candidate.application_id)
+        .single();
+
+      if (appError) throw appError;
+      if (!appData?.email) {
+        toast.error("Candidate email not found.");
+        return;
+      }
+
+      const { error: emailError } = await supabase.functions.invoke("send-interview-email", {
+        body: {
+          type,
+          to: appData.email,
+          applicantName: appData.applicant_name || candidate.name,
+          jobTitle: (appData as any).jobs?.title || "the position",
+        },
+      });
+      if (emailError) throw emailError;
+
+      toast.success(
+        type === "success"
+          ? `Success email sent to ${appData.email}`
+          : `Rejection email sent to ${appData.email}`
+      );
+    } catch (e) {
+      console.error(e);
+      toast.error(`Failed to send ${type === "success" ? "success" : "rejection"} email`);
+    } finally {
+      setSendingEmailType(null);
+    }
+  };
 
   const saveAptitudeScore = async () => {
     const newScore = parseFloat(aptitudeInput);
@@ -550,6 +594,26 @@ function CandidateRow({ candidate, rank, isTop, isBottom, expanded, onToggle }: 
                 <Button size="sm" variant="outline" onClick={generatePDF} disabled={isGeneratingPdf}>
                   <FileText className="h-4 w-4 mr-2" />
                   {isGeneratingPdf ? "Generating..." : "Download PDF Card"}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => sendOutcomeEmail("success")}
+                  disabled={sendingEmailType !== null}
+                  className="border-green-500 text-green-700 hover:bg-green-50 dark:border-green-600 dark:text-green-400 dark:hover:bg-green-950/40"
+                >
+                  <MailCheck className="h-4 w-4 mr-2" />
+                  {sendingEmailType === "success" ? "Sending..." : "Send Success Email"}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => sendOutcomeEmail("rejection")}
+                  disabled={sendingEmailType !== null}
+                  className="border-red-500 text-red-700 hover:bg-red-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-950/40"
+                >
+                  <MailX className="h-4 w-4 mr-2" />
+                  {sendingEmailType === "rejection" ? "Sending..." : "Send Rejection Email"}
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>

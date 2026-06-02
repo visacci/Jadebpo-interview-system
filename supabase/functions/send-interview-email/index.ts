@@ -119,7 +119,37 @@ Deno.serve(async (req) => {
           </div>
         </div>
       `;
-    } else {
+    } else if (type === 'success') {
+      subject = `Interview Outcome - ${jobTitle} at Jade BPO`;
+      html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: #14532d; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+            <h1 style="margin: 0; font-size: 24px;">Jade BPO</h1>
+            <p style="margin: 5px 0 0; opacity: 0.9;">Interview Outcome</p>
+          </div>
+          <div style="background: #f8fafc; padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px;">
+            <p style="font-size: 16px; color: #1e293b;">Dear <strong>${applicantName}</strong>,</p>
+            <p style="color: #475569; line-height: 1.6;">
+              Thank you for interviewing for the <strong>${jobTitle}</strong> position at Jade BPO.
+            </p>
+            <p style="color: #475569; line-height: 1.6;">
+              We are pleased to inform you that you have successfully passed this interview stage.
+              Our HR team will contact you shortly with the next steps.
+            </p>
+            <div style="background: #ecfdf3; border: 1px solid #86efac; border-radius: 8px; padding: 16px; margin: 20px 0;">
+              <p style="margin: 0; color: #166534; font-weight: bold;">
+                Congratulations, and thank you for your interest in joining Jade BPO.
+              </p>
+            </div>
+            <p style="color: #475569; margin-top: 20px;">
+              Best regards,<br/>
+              <strong>Human Resources Department</strong><br/>
+              Jade BPO
+            </p>
+          </div>
+        </div>
+      `;
+    } else if (type === 'rejection') {
       subject = `Application Update - ${jobTitle} at Jade BPO`;
       html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -147,6 +177,11 @@ Deno.serve(async (req) => {
           </div>
         </div>
       `;
+    } else {
+      return new Response(JSON.stringify({ error: 'Invalid email type' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const RESEND_KEY = Deno.env.get('RESEND_API_KEY') || 're_Z95cUygm_97anamghrA8hJo7EapTkeYfh';
