@@ -182,16 +182,18 @@ export default function ApplicationForm() {
   }
 
   if (job.status !== "open") {
+    const isPaused = job.status === "paused";
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardContent className="p-8 text-center space-y-4">
             <h1 className="text-xl font-bold text-foreground">
-              Applications Closed
+              {isPaused ? "Applications Paused" : "Applications Closed"}
             </h1>
             <p className="text-muted-foreground">
-              This position is no longer accepting applications. Please check
-              our careers page for other opportunities.
+              {isPaused
+                ? "Applications for this position are temporarily paused. Please check again later when the job is resumed."
+                : "This position is no longer accepting applications. Please check our careers page for other opportunities."}
             </p>
             <a href="/">
               <Button>Browse Open Positions</Button>

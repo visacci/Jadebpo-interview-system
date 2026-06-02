@@ -141,6 +141,9 @@ export default function JobApplications() {
       queryClient.invalidateQueries({ queryKey: ["jobs-list"] });
       toast.success(job?.status === "open" ? "Applications paused" : "Applications resumed");
     },
+    onError: (e: any) => {
+      toast.error(`Failed to update job status: ${e?.message ?? "Unknown error"}`);
+    },
   });
 
   const deleteMutation = useMutation({
